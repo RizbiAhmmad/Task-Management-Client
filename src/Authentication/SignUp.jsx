@@ -4,8 +4,10 @@ import { Link, useNavigate } from "react-router-dom";
 import SocialLogin from "./SocialLogin";
 import Swal from "sweetalert2";
 import { AuthContext } from "../providers/AuthProvider";
+import useAxiosPublic from "../Hooks/useAxiosPublic";
 
 const SignUp = () => {
+  const axiosPublic = useAxiosPublic();
   const {
     register,
     handleSubmit,
@@ -18,30 +20,50 @@ const SignUp = () => {
 
   const onSubmit = (data) => {
     console.log(data);
-    createUser(data.email, data.password)
-      .then((result) => {
-        const loggedUser = result.user;
-        console.log("Logged user", loggedUser);
-        updateUserProfile(data.name, data.photoURL)
-          .then(() => {
-            console.log("User profile updated");
-            reset();
-            Swal.fire({
-              title: "User created successfully",
-              icon: "success",
-              draggable: true,
-            });
-            navigate("/");
-          })
-          .catch((error) => console.log(error));
-      })
-      .catch((error) => console.log(error));
+    createUser(data.email, data.password).then((result) => {
+      const loggedUser = result.user;
+      console.log("Logged user", loggedUser);
+      updateUserProfile(data.name, data.photoURL)
+        .then(() => {
+          console.log("User profile updated");
+
+          // Prepare user data to send to MongoDB
+          const userInfo = {
+            name: data.name,
+            email: data.email,
+            photoURL: data.photoURL,
+            role: "user", // Default role
+            createdAt: new Date(),
+          };
+          axiosPublic.post("/users", userInfo).then((res) => {
+            if (res.data.insertedId) {
+              console.log("User added to the database");
+
+              reset();
+              Swal.fire({
+                title: "User created successfully",
+                icon: "success",
+                draggable: true,
+              });
+              navigate("/");
+            }
+          });
+        })
+        .catch((error) => console.log(error));
+    });
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-cover bg-center" style={{ backgroundImage: `url('https://img.freepik.com/free-vector/background-abstract-realistic-technology-particle_23-2148431264.jpg?semt=ais_hybrid')` }}>
+    <div
+      className="min-h-screen flex justify-center items-center bg-cover bg-center"
+      style={{
+        backgroundImage: `url('https://img.freepik.com/free-vector/background-abstract-realistic-technology-particle_23-2148431264.jpg?semt=ais_hybrid')`,
+      }}
+    >
       <div className="bg-white/20 backdrop-blur-lg shadow-xl rounded-xl p-8 max-w-md w-full">
-        <h2 className="text-3xl font-bold text-center text-white mb-6">Create an Account</h2>
+        <h2 className="text-3xl font-bold text-center text-white mb-6">
+          Create an Account
+        </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Name */}
@@ -53,7 +75,9 @@ const SignUp = () => {
               placeholder="Enter your name"
               className="w-full px-4 py-2 mt-1 bg-white/20 backdrop-blur-md text-white border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
-            {errors.name && <span className="text-red-400 text-sm">Name is required</span>}
+            {errors.name && (
+              <span className="text-red-400 text-sm">Name is required</span>
+            )}
           </div>
 
           {/* Photo URL */}
@@ -65,7 +89,11 @@ const SignUp = () => {
               placeholder="Profile image URL"
               className="w-full px-4 py-2 mt-1 bg-white/20 backdrop-blur-md text-white border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
-            {errors.photoURL && <span className="text-red-400 text-sm">Photo URL is required</span>}
+            {errors.photoURL && (
+              <span className="text-red-400 text-sm">
+                Photo URL is required
+              </span>
+            )}
           </div>
 
           {/* Email */}
@@ -77,7 +105,9 @@ const SignUp = () => {
               placeholder="Enter your email"
               className="w-full px-4 py-2 mt-1 bg-white/20 backdrop-blur-md text-white border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
-            {errors.email && <span className="text-red-400 text-sm">Email is required</span>}
+            {errors.email && (
+              <span className="text-red-400 text-sm">Email is required</span>
+            )}
           </div>
 
           {/* Password */}
@@ -94,10 +124,22 @@ const SignUp = () => {
               placeholder="Enter password"
               className="w-full px-4 py-2 mt-1 bg-white/20 backdrop-blur-md text-white border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
-            {errors.password?.type === "required" && <span className="text-red-400 text-sm">Password is required</span>}
-            {errors.password?.type === "minLength" && <span className="text-red-400 text-sm">At least 6 characters</span>}
-            {errors.password?.type === "maxLength" && <span className="text-red-400 text-sm">Max 20 characters</span>}
-            {errors.password?.type === "pattern" && <span className="text-red-400 text-sm">Must include uppercase, lowercase, and number</span>}
+            {errors.password?.type === "required" && (
+              <span className="text-red-400 text-sm">Password is required</span>
+            )}
+            {errors.password?.type === "minLength" && (
+              <span className="text-red-400 text-sm">
+                At least 6 characters
+              </span>
+            )}
+            {errors.password?.type === "maxLength" && (
+              <span className="text-red-400 text-sm">Max 20 characters</span>
+            )}
+            {errors.password?.type === "pattern" && (
+              <span className="text-red-400 text-sm">
+                Must include uppercase, lowercase, and number
+              </span>
+            )}
           </div>
 
           {/* Sign Up Button */}
@@ -112,7 +154,12 @@ const SignUp = () => {
 
         {/* Social Login */}
         <div className="text-center mt-4">
-          <p>Already have an account? <Link to="/login" className="text-blue-300 hover:underline">Login</Link></p>
+          <p>
+            Already have an account?{" "}
+            <Link to="/login" className="text-blue-300 hover:underline">
+              Login
+            </Link>
+          </p>
           <div className="divider my-3"></div>
           <div className="flex justify-center">
             <SocialLogin />

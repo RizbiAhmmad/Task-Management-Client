@@ -18,7 +18,7 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`px-8 py-4 sticky top-0 z-10 shadow-md ${
+      className={`px-12 py-4 sticky top-0 z-10 shadow-md ${
         isDarkMode ? "bg-gray-900" : "bg-blue-600"
       } text-white`}
     >
@@ -31,7 +31,7 @@ const Navbar = () => {
             alt="Task Manager Logo"
           />
           <h2 className="font-bold text-yellow-400 text-xl md:text-2xl">
-            Task Manager
+            Task<span className="text-purple-500">Zone</span>
           </h2>
         </Link>
 
