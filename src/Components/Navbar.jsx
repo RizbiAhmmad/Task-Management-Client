@@ -5,7 +5,7 @@ import { FaMoon, FaSun } from "react-icons/fa";
 import { ThemeContext } from "../providers/ThemeProvider";
 import { AuthContext } from "../providers/AuthProvider";
 
-import logo from "../assets/TM_Logo.jpeg"
+import logo from "../assets/TM_Logo.jpeg";
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
@@ -19,7 +19,7 @@ const Navbar = () => {
   return (
     <nav
       className={`px-12 py-4 sticky top-0 z-10 shadow-md ${
-        isDarkMode ? "bg-gray-900" : "bg-blue-600"
+        isDarkMode ? "bg-gray-900" : "bg-cyan-800"
       } text-white`}
     >
       <div className="container mx-auto flex justify-between items-center">
@@ -35,48 +35,8 @@ const Navbar = () => {
           </h2>
         </Link>
 
-        {/* Navigation Links */}
-        <div
-          className={`${
-            menuOpen ? "flex" : "hidden"
-          } md:flex flex-col md:flex-row gap-4 absolute md:static top-16 left-0 w-full md:w-auto ${
-            isDarkMode ? "bg-gray-900" : "bg-blue-600"
-          } md:bg-transparent p-4 md:p-0 shadow-lg md:shadow-none`}
-        >
-          <NavLink
-            to="/"
-            className={({ isActive }) =>
-              isActive
-                ? "text-yellow-400 font-bold border-b-2 border-yellow-400 pb-1"
-                : "text-white hover:text-yellow-400"
-            }
-          >
-            Home
-          </NavLink>
-          <NavLink
-            to="/tasks"
-            className={({ isActive }) =>
-              isActive
-                ? "text-yellow-400 font-bold border-b-2 border-yellow-400 pb-1"
-                : "text-white hover:text-yellow-400"
-            }
-          >
-            My Tasks
-          </NavLink>
-          <NavLink
-            to="/about"
-            className={({ isActive }) =>
-              isActive
-                ? "text-yellow-400 font-bold border-b-2 border-yellow-400 pb-1"
-                : "text-white hover:text-yellow-400"
-            }
-          >
-            About
-          </NavLink>
-        </div>
-
-        {/* Right Side (Theme Toggle + Auth) */}
-        <div className="flex items-center gap-4">
+        {/* Right Side (Theme Toggle + My Tasks + Auth) */}
+        <div className="flex items-center gap-6">
           {/* Dark Mode Toggle */}
           <button onClick={toggleDarkMode} className="text-2xl cursor-pointer">
             {isDarkMode ? (
@@ -86,7 +46,21 @@ const Navbar = () => {
             )}
           </button>
 
-          {/* User Image & Logout */}
+          {/* Show "My Tasks" on the right side if user is logged in */}
+          {user && (
+            <NavLink
+              to="/tasks"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-yellow-400 font-bold border-b-2 border-yellow-400 pb-1"
+                  : "text-white hover:text-yellow-400"
+              }
+            >
+              My Tasks
+            </NavLink>
+          )}
+
+          {/* User Authentication (Show Login or Logout) */}
           {user ? (
             <div className="flex items-center gap-3">
               <img

@@ -5,6 +5,7 @@ import MainLayout from "../Layouts/MainLayout";
 import Login from "../Authentication/Login";
 import SignUp from "../Authentication/SignUp";
 import TaskBoard from "../Pages/TaskBoard";
+import Home from "../Pages/Home";
 
   export const router = createBrowserRouter([
     {
@@ -13,7 +14,7 @@ import TaskBoard from "../Pages/TaskBoard";
       children:[
         {
             path: "/",
-            element: <h1>Home Page</h1>
+            element: <Home></Home>
         },
         {
           path:'login',
