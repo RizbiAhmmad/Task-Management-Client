@@ -4,6 +4,7 @@ import io from "socket.io-client";
 import axios from "axios";
 import { motion } from "framer-motion"; // Importing motion for animations
 import Swal from "sweetalert2";
+
 const API_URL = "https://y-gray-eight.vercel.app";
 const socket = io(API_URL);
 
@@ -112,35 +113,33 @@ const TaskBoard = () => {
   const handleUpdateTask = async (taskId, e) => {
     e.preventDefault();
     if (!editedTask.title) return;
-  
+
     try {
       const response = await axios.put(`${API_URL}/tasks/${taskId}`, editedTask);
       const updatedTask = response.data;
-  
+
       // Update state immediately
       setTasks((prev) => {
         const newTasks = { ...prev };
-  
+
         Object.keys(newTasks).forEach((category) => {
           newTasks[category] = newTasks[category].map((task) =>
             task._id === taskId ? { ...task, ...editedTask } : task
           );
         });
-  
+
         return newTasks;
       });
-  
+
       setEditingTask(null);
       setEditedTask({ title: "", description: "", category: "" });
-  
+
       // Emit event to server
       socket.emit("taskUpdated", updatedTask);
     } catch (error) {
       console.error("Error updating task:", error);
     }
   };
-  
-  
 
   const cancelEdit = () => {
     setEditingTask(null);
@@ -169,7 +168,7 @@ const TaskBoard = () => {
     destTasks.splice(destination.index, 0, movingTask);
 
     // Update category immediately
-  movingTask.category = destCategory;
+    movingTask.category = destCategory;
 
     setTasks((prev) => ({
       ...prev,
@@ -206,32 +205,29 @@ const TaskBoard = () => {
   const handleAddTask = async (e) => {
     e.preventDefault();
     if (!newTask.title) return;
-  
+
     try {
       const response = await axios.post(`${API_URL}/tasks`, newTask);
       const createdTask = response.data;
-  
+
       // Update state immediately
       setTasks((prev) => ({
         ...prev,
         [createdTask.category]: [...prev[createdTask.category], createdTask],
       }));
-  
+
       setNewTask({ title: "", description: "", category: "To-Do" });
-  
+
       // Emit event to server
       socket.emit("taskCreated", createdTask);
     } catch (error) {
       console.error("Error adding task:", error);
     }
   };
-  
-  
-
 
   const handleDeleteTask = async (taskId) => {
     if (!taskId) return;
-  
+
     const result = await Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to undo this!",
@@ -241,9 +237,9 @@ const TaskBoard = () => {
       cancelButtonColor: "#3085d6",
       confirmButtonText: "Yes, delete it!",
     });
-  
+
     if (!result.isConfirmed) return; // User canceled
-  
+
     // Optimistically remove task from UI
     const previousTasks = { ...tasks };
     setTasks((prev) => {
@@ -253,26 +249,23 @@ const TaskBoard = () => {
       });
       return newTasks;
     });
-  
+
     try {
       await axios.delete(`${API_URL}/tasks/${taskId}`);
-  
+
       // Emit event to server
       socket.emit("taskDeleted", taskId);
-  
+
       Swal.fire("Deleted!", "Your task has been deleted.", "success");
     } catch (error) {
       console.error("Error deleting task:", error);
-  
+
       // Restore previous state if the request fails
       setTasks(previousTasks);
-  
+
       Swal.fire("Error!", "Failed to delete task. Please try again.", "error");
     }
   };
-  
-  
-  
 
   const handleCategoryChange = async (taskId, newCategory) => {
     try {
@@ -341,7 +334,11 @@ const TaskBoard = () => {
           {Object.entries(tasks).map(([category, categoryTasks]) => (
             <motion.div
               key={category}
-              className="bg-white rounded-lg shadow-lg p-4"
+              className={`rounded-lg shadow-lg p-4 ${
+                category === "To-Do" ? "bg-blue-100" :
+                category === "In Progress" ? "bg-yellow-100" :
+                "bg-green-100"
+              }`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
