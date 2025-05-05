@@ -1,6 +1,9 @@
 import { useContext } from "react";
 import { motion } from "framer-motion";
-import { FaReact, FaNodeJs, FaDatabase, FaHtml5, FaCss3Alt, FaJsSquare, FaGitAlt } from "react-icons/fa";
+import { 
+  FaReact, FaNodeJs, FaDatabase, FaHtml5, 
+  FaCss3Alt, FaJsSquare, FaGitAlt 
+} from "react-icons/fa";
 import { SiTailwindcss, SiMongodb, SiExpress, SiVite } from "react-icons/si";
 import { ThemeContext } from "../../providers/ThemeProvider";
 
@@ -17,46 +20,69 @@ const technologies = [
   { icon: <FaGitAlt size={50} className="text-red-500" />, name: "Git & GitHub" },
 ];
 
+const containerVariants = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, scale: 0.7, y: 30 },
+  show: { opacity: 1, scale: 1, y: 0 },
+};
+
 const TechnologiesUsed = () => {
   const { isDarkMode } = useContext(ThemeContext);
 
   return (
-    <section className={`${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"} py-16 px-12`}>
-      <div className="container mx-auto text-center">
+    <section className={`${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"} py-20 px-8`}>
+      <div className="max-w-6xl mx-auto text-center">
         <motion.h2 
-          className="text-4xl font-bold mb-6 text-yellow-500"
+          className="text-4xl font-extrabold mb-4 text-yellow-500"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.6 }}
         >
-          🛠️ Technologies Used
+          ✨ Technologies Used
         </motion.h2>
 
         <motion.p 
-          className="max-w-2xl mx-auto mb-12 text-gray-500 dark:text-gray-300"
+          className="max-w-2xl mx-auto mb-14 text-lg text-gray-500 dark:text-gray-300"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.4 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
         >
-          Our project is built with modern web technologies to ensure high performance, scalability, and an amazing user experience.
+          We use cutting-edge tools to build seamless, modern, and scalable web applications.
         </motion.p>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+        <motion.div 
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+        >
           {technologies.map((tech, index) => (
-            <motion.div 
+            <motion.div
               key={index}
-              className={`p-6 rounded-xl shadow-lg flex flex-col items-center transition-all
-                ${isDarkMode ? "bg-gray-800 text-white shadow-gray-700" : "bg-white text-gray-900 shadow-lg"}`}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.1, duration: 0.3 }}
-              whileHover={{ scale: 1.15, rotate: 5, transition: { duration: 0.15 } }}
+              variants={cardVariants}
+              className={`p-6 rounded-2xl shadow-xl flex flex-col items-center border 
+                transition-all transform hover:scale-105 hover:shadow-2xl
+                ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}
+              whileHover={{ rotate: [0, 3, -3, 0], transition: { duration: 0.6 } }}
             >
-              {tech.icon}
+              <motion.div
+                whileHover={{ scale: 1.2, rotate: 360 }}
+                transition={{ duration: 0.6 }}
+              >
+                {tech.icon}
+              </motion.div>
               <h3 className="text-lg font-semibold mt-4">{tech.name}</h3>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
